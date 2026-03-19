@@ -8,19 +8,21 @@ A learning project for developers coming from **Spring Boot + Flutter** backgrou
 ecom-backend/
 ├── sql/
 │   └── schema.sql          # Database tables (run once)
+├── client/
+│   └── frontend(next.js)
 ├── src/
-│   ├── index.js            # Entry point (like SpringApplication.run)
+│   ├── index.js            # Entry point 
 │   ├── config/
 │   │   └── db.js           # PostgreSQL connection pool
 │   ├── middleware/
-│   │   └── auth.js         # JWT guard (like Spring Security filters)
-│   ├── controllers/        # Business logic (like @RestController)
+│   │   └── auth.js         # JWT guard 
+│   ├── controllers/        # Business logic 
 │   │   ├── authController.js
 │   │   ├── productController.js
 │   │   ├── cartController.js
 │   │   ├── orderController.js
 │   │   └── adminController.js
-│   └── routes/             # URL mapping (like @RequestMapping)
+│   └── routes/             # URL mapping 
 │       ├── authRoutes.js
 │       ├── productRoutes.js
 │       ├── cartRoutes.js
