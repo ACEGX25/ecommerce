@@ -1,3 +1,4 @@
+// app/page.tsx
 import Link from "next/link";
 import Image from "next/image";
 import heroMen from "@/assets/hero-men.jpg";
@@ -7,9 +8,13 @@ const Index = () => {
   return (
     <div className="pt-16 min-h-screen">
       {/* Hero split */}
-      <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
-        <Link href="/men" className="relative flex-1 group overflow-hidden border-b md:border-b-0 md:border-r">
-          <Image src={heroMen} alt="Men's collection" fill className="object-cover" />
+      <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)]">
+
+        <Link
+          href="/men"
+          className="relative flex-1 group overflow-hidden border-b md:border-b-0 md:border-r"
+        >
+          <Image src={heroMen} alt="Men's collection" fill className="object-cover object-top" />
           <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300" />
           <div className="absolute inset-0 flex items-end p-8">
             <div>
@@ -18,8 +23,12 @@ const Index = () => {
             </div>
           </div>
         </Link>
-        <Link href="/women" className="relative flex-1 group overflow-hidden">
-          <Image src={heroWomen} alt="Women's collection" fill className="object-cover" />
+
+        <Link
+          href="/women"
+          className="relative flex-1 group overflow-hidden"
+        >
+          <Image src={heroWomen} alt="Women's collection" fill className="object-cover object-top" />
           <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300" />
           <div className="absolute inset-0 flex items-end p-8">
             <div>
@@ -28,16 +37,20 @@ const Index = () => {
             </div>
           </div>
         </Link>
+
       </div>
 
       {/* Marquee strip */}
       <div className="border-t border-b py-4 overflow-hidden">
         <div className="flex gap-12 animate-[marquee_20s_linear_infinite] whitespace-nowrap">
-          {Array(3).fill(["SUPIMA COTTON", "HEATTECH", "AIRISM", "DRY-EX", "BLOCKTECH", "ULTRA LIGHT DOWN"]).flat().map((text, i) => (
-            <span key={i} className="text-xs font-mono tracking-widest text-muted-foreground uppercase">
-              {text}
-            </span>
-          ))}
+          {Array(3)
+            .fill(["SUPIMA COTTON", "HEATTECH", "AIRISM", "DRY-EX", "BLOCKTECH", "ULTRA LIGHT DOWN"])
+            .flat()
+            .map((text, i) => (
+              <span key={i} className="text-xs font-mono tracking-widest text-muted-foreground uppercase">
+                {text}
+              </span>
+            ))}
         </div>
       </div>
     </div>
