@@ -1,20 +1,13 @@
-// app/page.tsx
 import Link from "next/link";
 import Image from "next/image";
-import heroMen from "@/assets/hero-men.jpg";
-import heroWomen from "@/assets/hero-women.jpg";
 
 const Index = () => {
   return (
     <div className="pt-16 min-h-screen">
-      {/* Hero split */}
       <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)]">
 
-        <Link
-          href="/men"
-          className="relative flex-1 group overflow-hidden border-b md:border-b-0 md:border-r"
-        >
-          <Image src={heroMen} alt="Men's collection" fill className="object-cover object-top" />
+        <Link href="/men" className="relative flex-1 group overflow-hidden border-b md:border-b-0 md:border-r">
+          <Image src="/assets/hero-men.jpg" alt="Men's collection" fill className="object-cover object-top" />
           <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300" />
           <div className="absolute inset-0 flex items-end p-8">
             <div>
@@ -24,11 +17,8 @@ const Index = () => {
           </div>
         </Link>
 
-        <Link
-          href="/women"
-          className="relative flex-1 group overflow-hidden"
-        >
-          <Image src={heroWomen} alt="Women's collection" fill className="object-cover object-top" />
+        <Link href="/women" className="relative flex-1 group overflow-hidden">
+          <Image src="/assets/hero-women.jpg" alt="Women's collection" fill className="object-cover object-top" />
           <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300" />
           <div className="absolute inset-0 flex items-end p-8">
             <div>

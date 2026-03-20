@@ -11,11 +11,12 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <div
-      className="product-cell group relative"
+      className="product-cell group relative border bg-background p-4 flex flex-col"
       onMouseEnter={() => setShowSpecs(true)}
       onMouseLeave={() => setShowSpecs(false)}
     >
-      <div className="relative aspect-square overflow-hidden mb-4">
+      {/* Image */}
+      <div className="relative aspect-square overflow-hidden mb-4 bg-muted">
         <img
           src={product.image}
           alt={product.name}
@@ -30,11 +31,13 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
       </div>
+
+      {/* Info */}
       <h3 className="heading-l2 text-sm">{product.name}</h3>
-      <p className="meta-text text-primary mt-1">${product.price.toFixed(2)}</p>
+      <p className="meta-text text-red-500 mt-1">${product.price.toFixed(2)}</p>
 
       {/* Size picker */}
-      <div className="flex gap-1 mt-3">
+      <div className="flex flex-wrap gap-1 mt-3">
         {product.sizes.map((size) => (
           <button
             key={size}
@@ -50,6 +53,7 @@ export function ProductCard({ product }: { product: Product }) {
         ))}
       </div>
 
+      {/* Add to Bag */}
       <button
         onClick={() => {
           if (selectedSize) addItem(product, selectedSize);
