@@ -11,6 +11,7 @@ import { errorHandler } from "../src/modules/middleware/errorhandler";
 // Route modules
 import authRoutes  from "../src/modules/auth/auth.routes";
 import usersRoutes from "../src/modules/users/users.routes";
+import ordersRoutes from "../src/modules/orders/orders.routes";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.get("/health", (_req, res) => {
 // ─── API routes ───────────────────────────────────────────────
 app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
+app.use("/api/orders", ordersRoutes);
 
 // ─── 404 handler ──────────────────────────────────────────────
 app.use((_req, res) => {
