@@ -14,14 +14,14 @@ const REFRESH_COOKIE = "dingly_refresh";
 const IS_PROD = process.env.NODE_ENV === "production";
 
 interface UserWithHash extends User {
-  password_hash: string;
+  password: string;
 }
 
 // ─── User queries ─────────────────────────────────────────────
 export async function findUserByEmail(email: string): Promise<UserWithHash | null> {
   const res = await db.query(
-    `SELECT id, name, email, role, password_hash, is_active,
-            email_verified, avatar_url, created_at, updated_at
+    `SELECT id, name, email, role, password, is_active,
+            avatar_url, created_at, updated_at
      FROM users WHERE email = $1`,
     [email.toLowerCase().trim()]
   );
@@ -45,7 +45,7 @@ export async function createUser(params: {
 }): Promise<User> {
   const passwordHash = await hashPassword(params.password);
   const res = await db.query(
-    `INSERT INTO users (name, email, password_hash, role)
+    `INSERT INTO users (name, email, password, role)
      VALUES ($1, $2, $3, $4)
      RETURNING id, name, email, role, is_active, avatar_url, created_at, updated_at`,
     [

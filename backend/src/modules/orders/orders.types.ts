@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 // src/modules/orders/orders.types.ts
 
 export type OrderStatus =
@@ -9,30 +11,37 @@ export type OrderStatus =
   | 'cancelled'
   | 'refunded';
 
-export interface ShippingAddress {
-  full_name:     string;
-  phone:         string;
-  address_line1: string;
-  address_line2?: string;
-  city:          string;
-  state:         string;
-  postal_code:   string;
-  country:       string;
-}
+const shippingAddressSchema = z.object({
+  full_name:     z.string().min(1),
+  phone:         z.string().min(1),
+  address_line1: z.string().min(1),
+  address_line2: z.string().optional(),
+  city:          z.string().min(1),
+  state:         z.string().min(1),
+  postal_code:   z.string().min(1),
+  country:       z.string().min(1),
+});
 
 // ─── Request body types ───────────────────────────────────────
 
-export interface CreateOrderBody {
-  shipping_address:  ShippingAddress;
-  billing_address?:  ShippingAddress;
-  payment_method:    string;
-  coupon_code?:      string;
-  notes?:            string;
-}
 
-export interface UpdateOrderStatusBody {
-  status: OrderStatus;
-}
+export const createOrderSchema = z.object({
+  items: z.array(
+    z.object({
+      product_id: z.number(),
+      quantity: z.number().min(1),
+    })
+  ),
+  shipping_address: shippingAddressSchema,
+  billing_address:  shippingAddressSchema.optional(),
+  payment_method:   z.string().min(1),
+  coupon_code:      z.string().optional(),
+  notes:            z.string().optional(),
+});
+
+export const updateOrderStatusSchema = z.object({
+  status: z.enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']),
+});
 
 export interface CancelOrderBody {
   reason?: string;
@@ -40,55 +49,37 @@ export interface CancelOrderBody {
 
 // ─── DB row shapes (what comes back from pg) ──────────────────
 
-export interface OrderRow {
-  id:              string;
-  order_number:    string;
-  user_id:         string;
-  status:          OrderStatus;
-  subtotal:        string;       // pg returns NUMERIC as string
-  discount_amount: string;
-  tax_amount:      string;
-  shipping_amount: string;
-  total_amount:    string;
-  currency:        string;
-  coupon_id:       string | null;
-  coupon_code:     string | null;
+// Add these to orders.types.ts
+
+export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
+
+export interface OrderItem {
+  id:                 number;
+  order_id:           number;
+  product_id:         number;
+  quantity:           number;
+  price_at_purchase:  number;
+  product_name:       string;
+}
+
+export interface Order {
+  id:               number;
+  user_id:          number;
+  total_amount:     number;
+  status:           OrderStatus;
   shipping_address: ShippingAddress;
-  billing_address:  ShippingAddress | null;
-  notes:           string | null;
-  cancelled_reason: string | null;
-  created_at:      Date;
-  updated_at:      Date;
+  created_at:       Date;
+  updated_at:       Date;
 }
 
-export interface OrderItemRow {
-  id:           string;
-  order_id:     string;
-  product_id:   string | null;
-  variant_id:   string | null;
-  product_name: string;
-  variant_name: string | null;
-  sku:          string | null;
-  quantity:     number;
-  unit_price:   string;
-  total_price:  string;
-  tax_rate:     string;
-  image_url:    string | null;
-  created_at:   Date;
+export interface OrderWithItems extends Order {
+  items: OrderItem[];
 }
 
-export interface CartItemRow {
-  cart_id:        string;
-  product_id:     string;
-  variant_id:     string | null;
-  quantity:       number;
-  unit_price:     string;
-  product_name:   string;
-  stock_quantity: number;
-  variant_stock:  number | null;
-  tax_rate:       string;
-  variant_name:   string | null;
-  image_url:      string | null;
-  sku:            string | null;
-  is_active:      boolean;
+export interface CreateOrderInput {
+  shipping_address: ShippingAddress;
+  items: {
+    product_id: number;
+    quantity:   number;
+  }[];
 }
