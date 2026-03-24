@@ -1,4 +1,4 @@
-import api from "./api";
+import { api } from "./api";
 
 export interface WomenProduct {
   id: number;
@@ -12,22 +12,14 @@ export interface WomenProduct {
   image_url?: string;
 }
 
-export const fetchAllWomen = async (): Promise<WomenProduct[]> => {
-  const res = await api.get("/women");
-  return res.data;
-};
+export const fetchAllWomen = () =>
+  api.get<WomenProduct[]>("/api/women");
 
-export const fetchWomenByCategory = async (subcategory: string): Promise<WomenProduct[]> => {
-  const res = await api.get(`/women/category/${subcategory}`);
-  return res.data;
-};
+export const fetchWomenByCategory = (subcategory: string) =>
+  api.get<WomenProduct[]>(`/api/women/category/${subcategory}`);
 
-export const fetchWomenCategories = async (): Promise<string[]> => {
-  const res = await api.get("/women/categories");
-  return res.data;
-};
+export const fetchWomenCategories = () =>
+  api.get<string[]>("/api/women/categories");
 
-export const fetchWomenById = async (id: number): Promise<WomenProduct> => {
-  const res = await api.get(`/women/${id}`);
-  return res.data;
-};
+export const fetchWomenById = (id: number) =>
+  api.get<WomenProduct>(`/api/women/${id}`);
