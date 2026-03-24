@@ -1,4 +1,3 @@
-// src/index.ts
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -11,6 +10,7 @@ import { errorHandler } from "../src/modules/middleware/errorhandler";
 // Route modules
 import authRoutes  from "../src/modules/auth/auth.routes";
 import usersRoutes from "../src/modules/users/users.routes";
+import womenRoutes from "../src/modules/women/women.routes";
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: ENV.FRONTEND_URL,
-    credentials: true,   // allow cookies (refresh token)
+    credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -37,6 +37,7 @@ app.get("/health", (_req, res) => {
 // ─── API routes ───────────────────────────────────────────────
 app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
+app.use("/api/women",        womenRoutes);
 
 // ─── 404 handler ──────────────────────────────────────────────
 app.use((_req, res) => {

@@ -20,9 +20,9 @@ interface UserWithHash extends User {
 // ─── User queries ─────────────────────────────────────────────
 export async function findUserByEmail(email: string): Promise<UserWithHash | null> {
   const res = await db.query(
-    `SELECT id, name, email, role, password_hash, is_active,
-            email_verified, avatar_url, created_at, updated_at
-     FROM users WHERE email = $1`,
+    `SELECT id, name, email, role, password AS password_hash, is_active,
+        avatar_url, created_at, updated_at
+ FROM users WHERE email = $1`,
     [email.toLowerCase().trim()]
   );
   return (res.rows[0] as unknown as UserWithHash) ?? null;
@@ -45,7 +45,7 @@ export async function createUser(params: {
 }): Promise<User> {
   const passwordHash = await hashPassword(params.password);
   const res = await db.query(
-    `INSERT INTO users (name, email, password_hash, role)
+    `INSERT INTO users (name, email, password, role)
      VALUES ($1, $2, $3, $4)
      RETURNING id, name, email, role, is_active, avatar_url, created_at, updated_at`,
     [
