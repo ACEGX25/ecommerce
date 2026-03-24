@@ -1,1 +1,3 @@
 https://lovable.dev/projects/462deb1c-4eb4-491a-9f5a-f2fc5ab867e7?magic_link=mc_59abc2f5-4868-4dd9-8002-fed65b319899
+
+psql -U postgres -d ecom_db -f C:\Users\PV-IT-Intern-4\ecom\ecommerce\backend\src\db\mock_data.sql

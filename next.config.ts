@@ -1,8 +1,7 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+const nextConfig = {
+  images: {
+    unoptimized: true, // for local static images in public/
+  },
 };
 
 export default nextConfig;
