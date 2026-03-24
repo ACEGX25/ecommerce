@@ -1,31 +1,67 @@
 "use client";
 
-import { motion,Variants } from "framer-motion";
-import { products } from "@/lib/products";
+import { motion, Variants } from "framer-motion";
 import { ProductCard } from "@/components/ProductCard";
+import { useEffect, useState } from "react";
+import { fetchAllWomen, WomenProduct } from "@/lib/women";
 
-// Parent controls the stagger timing
 const gridVariants = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.08, // each card waits 80ms after the previous
+      staggerChildren: 0.08,
     },
   },
 };
 
-// Each card's entrance — this overrides the card's own initial/animate
 const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 } satisfies Variants;
 
 export default function WomenPage() {
-  const womenProducts = products.filter((p) => p.category === "women");
+  const [products, setProducts] = useState<WomenProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAllWomen()
+      .then(setProducts)
+      .catch(() => setError("Failed to load products"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="pt-16 min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground tracking-wide">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-16 min-h-screen flex items-center justify-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  // Map backend product to frontend Product shape
+  const mappedProducts = products.map((p) => ({
+    id: String(p.id),
+    name: p.name,
+    price: Number(p.price),
+    image: p.image_url || "/assets/placeholder.jpg",
+    category: "women" as const,
+    material: "",
+    weight: "",
+    fit: "",
+    sizes: p.size ? [p.size] : ["XS", "S", "M", "L"],
+  }));
 
   return (
     <div className="pt-16 min-h-screen">
-      {/* Heading fade in */}
       <motion.div
         className="border-b px-4 md:px-8 py-6"
         initial={{ opacity: 0, y: -10 }}
@@ -34,22 +70,21 @@ export default function WomenPage() {
       >
         <h1 className="heading-l1 text-[clamp(2rem,5vw,4rem)]">WOMEN</h1>
         <p className="text-sm text-muted-foreground mt-2 tracking-wide">
-          {womenProducts.length} items — Precision in every stitch
+          {mappedProducts.length} items — Precision in every stitch
         </p>
       </motion.div>
 
-      {/* Grid — parent orchestrates stagger */}
       <motion.div
         className="grid grid-cols-2 md:grid-cols-4 gap-0"
         variants={gridVariants}
         initial="hidden"
         animate="show"
       >
-        {womenProducts.map((product) => (
+        {mappedProducts.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
-            variants={cardVariants} // card receives the variant from parent
+            variants={cardVariants}
           />
         ))}
       </motion.div>
