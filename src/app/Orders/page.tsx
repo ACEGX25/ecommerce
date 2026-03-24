@@ -1,56 +1,144 @@
 "use client"
 
-const orders = [
-    {
-    id: "#8472-A",
-    date: "2026-03-10",
-    status: "Delivered",
-    items: [
-      { name: "Supima Cotton Crew Tee", size: "M", qty: 2, price: 19.9 },
-      { name: "Stretch Slim Chino", size: "32", qty: 1, price: 39.9 },
-    ],
-  },
+import { useEffect, useState } from "react"
 
-  {
-    id: "#8391-B",
-    date: "2026-02-22",
-    status: "In Transit",
-    items: [
-      { name: "Dry Sweat Pullover Hoodie", size: "L", qty: 1, price: 29.9 },
-    ],
-  },
+// ─── Types ────────────────────────────────────────────────────
+interface OrderItem {
+  product_id: number
+  product_name: string
+  quantity: number
+  price_at_purchase: number
+}
 
-  {
-    id: "#8205-C",
-    date: "2026-01-15",
-    status: "Delivered",
-    items: [
-      { name: "Linen Blend Shirt", size: "M", qty: 1, price: 34.9 },
-      { name: "MA-1 Bomber Jacket", size: "M", qty: 1, price: 59.9 }
-    ],
-  },
-]
+interface Order {
+  id: number
+  total_amount: number
+  status: string
+  shipping_address: string
+  created_at: string
+  items: OrderItem[]
+}
 
+// ─── Helpers ──────────────────────────────────────────────────
 const statusColor = (status: string): string => {
   switch (status) {
-    case "Delivered":
-      return "bg-foreground text-background";
-    case "In Transit":
-      return "bg-primary text-primary-foreground";
+    case "delivered":
+      return "bg-foreground text-background"
+    case "shipped":
+      return "bg-primary text-primary-foreground"
+    case "confirmed":
+      return "bg-blue-100 text-blue-800"
+    case "cancelled":
+      return "bg-destructive text-destructive-foreground"
     default:
-      return "bg-muted text-muted-foreground";
+      return "bg-muted text-muted-foreground"
   }
-};
+}
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
+
+// ─── Component ────────────────────────────────────────────────
 export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("accessToken="))
+          ?.split("=")[1]
+
+        if (!token) {
+          setError("Not authenticated")
+          setLoading(false)
+          return
+        }
+
+        const res = await fetch(`http://localhost:4000/api/orders`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })
+        
+        if (!res.ok) {
+          throw new Error("Failed to fetch orders")
+        }
+
+        const data = await res.json()
+        console.log("API response:", JSON.stringify(data, null, 2))  // add this
+        setOrders(data.orders)
+
+      } catch (err: any) {
+        setError(err.message || "Something went wrong")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOrders()
+  }, [])
+
+  // ─── Loading ───────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="pt-16 min-h-screen">
+        <div className="border-b px-4 md:px-8 py-6">
+          <h1 className="heading-l1 text-[clamp(2rem,5vw,4rem)]">ORDERS</h1>
+        </div>
+        <div className="max-w-3xl mx-auto px-4 md:px-8 py-12 text-center text-muted-foreground text-sm">
+          Loading orders...
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Error ─────────────────────────────────────────────────
+  if (error) {
+    return (
+      <div className="pt-16 min-h-screen">
+        <div className="border-b px-4 md:px-8 py-6">
+          <h1 className="heading-l1 text-[clamp(2rem,5vw,4rem)]">ORDERS</h1>
+        </div>
+        <div className="max-w-3xl mx-auto px-4 md:px-8 py-12 text-center text-destructive text-sm">
+          {error}
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Empty ─────────────────────────────────────────────────
+  if (orders.length === 0) {
+    return (
+      <div className="pt-16 min-h-screen">
+        <div className="border-b px-4 md:px-8 py-6">
+          <h1 className="heading-l1 text-[clamp(2rem,5vw,4rem)]">ORDERS</h1>
+        </div>
+        <div className="max-w-3xl mx-auto px-4 md:px-8 py-12 text-center text-muted-foreground text-sm">
+          No orders yet.
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Orders list ───────────────────────────────────────────
   return (
     <div className="pt-16 min-h-screen">
       <div className="border-b px-4 md:px-8 py-6">
         <h1 className="heading-l1 text-[clamp(2rem,5vw,4rem)]">ORDERS</h1>
         <p className="text-sm text-muted-foreground mt-2">
-          {orders.length} orders on file
+          {orders.length} {orders.length === 1 ? "order" : "orders"} on file
         </p>
       </div>
+
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-4">
         {orders.map((order) => (
           <div
@@ -60,15 +148,13 @@ export default function OrdersPage() {
             {/* Order header */}
             <div className="flex items-center justify-between p-4 border-b bg-muted">
               <div className="flex items-center gap-4">
-                <span className="meta-text font-medium">{order.id}</span>
+                <span className="meta-text font-medium">#{order.id}</span>
                 <span className="text-xs text-muted-foreground">
-                  {order.date}
+                  {formatDate(order.created_at)}
                 </span>
               </div>
               <span
-                className={`px-2 py-1 text-[10px] font-mono uppercase tracking-wider ${statusColor(
-                  order.status
-                )}`}
+                className={`px-2 py-1 text-[10px] font-mono uppercase tracking-wider ${statusColor(order.status)}`}
               >
                 {order.status}
               </span>
@@ -81,13 +167,13 @@ export default function OrdersPage() {
                 className="flex items-center justify-between p-4 border-b last:border-b-0"
               >
                 <div>
-                  <p className="text-sm font-medium">{item.name}</p>
+                  <p className="text-sm font-medium">{item.product_name}</p>
                   <p className="text-xs text-muted-foreground">
-                    Size: {item.size} · Qty: {item.qty}
+                    Qty: {item.quantity}
                   </p>
                 </div>
                 <span className="meta-text text-primary">
-                  ${(item.price * item.qty).toFixed(2)}
+                  ₹{(item.price_at_purchase * item.quantity).toFixed(2)}
                 </span>
               </div>
             ))}
@@ -96,12 +182,12 @@ export default function OrdersPage() {
             <div className="flex items-center justify-between p-4 bg-muted">
               <span className="text-sm font-medium">Total</span>
               <span className="meta-text text-primary font-medium">
-                ${order.items.reduce((s, i) => s + i.price * i.qty, 0).toFixed(2)}
+                ₹{Number(order.total_amount).toFixed(2)}
               </span>
             </div>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
