@@ -99,7 +99,7 @@ export const deleteMen = async (req: Request, res: Response): Promise<void> => {
 
 export const uploadMenImage = async (req: Request, res: Response): Promise<void> => {
   try {
-    const file = req.file as any;
+    const file = (req as any).file;
     if (!file) {
       res.status(400).json({ message: "No file uploaded" });
       return;

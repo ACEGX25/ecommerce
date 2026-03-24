@@ -12,6 +12,7 @@ import authRoutes     from "./modules/auth/auth.routes";
 import usersRoutes    from "./modules/users/users.routes";
 import womenRoutes    from "./modules/women/women.routes";
 import purchaseRoutes from "./modules/purchase/purchase.routes";
+import menRoutes from "./modules/men/men.routes";
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
 app.use("/api/women",        womenRoutes);
 app.use("/api/purchase",     purchaseRoutes);
+app.use("/api/men", menRoutes)
 
 // ─── 404 handler ──────────────────────────────────────────────
 app.use((_req, res) => {
