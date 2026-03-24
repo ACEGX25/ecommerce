@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   getAllWomen,
   getWomenById,
+  getWomenByCategory,
+  getWomenCategories,
   createWomen,
   updateWomen,
   deleteWomen,
@@ -12,8 +14,10 @@ import { requireAdmin } from "../middleware/requireadmin";
 const router = Router();
 
 // Public
-router.get("/",       getAllWomen);
-router.get("/:id",    getWomenById);
+router.get("/",                        getAllWomen);
+router.get("/categories",              getWomenCategories);
+router.get("/category/:subcategory",   getWomenByCategory);
+router.get("/:id",                     getWomenById);
 
 // Admin only
 router.post("/",      requireAuth, requireAdmin, createWomen);

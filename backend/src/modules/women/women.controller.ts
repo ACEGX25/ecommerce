@@ -2,15 +2,36 @@ import { Request, Response } from "express";
 import {
   getAllWomenService,
   getWomenByIdService,
+  getWomenByCategoryService,
   createWomenService,
   updateWomenService,
   deleteWomenService,
+  getWomenCategoriesService,
 } from "./women.service";
 
 export const getAllWomen = async (req: Request, res: Response): Promise<void> => {
   try {
     const products = await getAllWomenService();
     res.status(200).json(products);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getWomenByCategory = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const subcategory = req.params.subcategory as string;
+    const products = await getWomenByCategoryService(subcategory);
+    res.status(200).json(products);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getWomenCategories = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const categories = await getWomenCategoriesService();
+    res.status(200).json(categories);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }

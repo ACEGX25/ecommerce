@@ -24,3 +24,13 @@ export interface CreateWomenDto {
 }
 
 export interface UpdateWomenDto extends Partial<CreateWomenDto> {}
+
+export type WomenSubCategory =
+  | "Women > Tops"
+  | "Women > Dresses"
+  | "Women > Jeans"
+  | "Women > Trousers"
+  | "Women > Skirts"
+  | "Women > Jackets"
+  | "Women > Innerwear"
+  | "Women > Lounge";
