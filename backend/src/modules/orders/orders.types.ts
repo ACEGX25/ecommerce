@@ -1,85 +1,49 @@
 import { z } from "zod";
 
-// src/modules/orders/orders.types.ts
-
-export type OrderStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
-  | 'refunded';
-
-const shippingAddressSchema = z.object({
-  full_name:     z.string().min(1),
-  phone:         z.string().min(1),
-  address_line1: z.string().min(1),
-  address_line2: z.string().optional(),
-  city:          z.string().min(1),
-  state:         z.string().min(1),
-  postal_code:   z.string().min(1),
-  country:       z.string().min(1),
-});
-
-// ─── Request body types ───────────────────────────────────────
-
-
 export const createOrderSchema = z.object({
-  items: z.array(
-    z.object({
-      product_id: z.number(),
-      quantity: z.number().min(1),
-    })
-  ),
-  shipping_address: shippingAddressSchema,
-  billing_address:  shippingAddressSchema.optional(),
-  payment_method:   z.string().min(1),
-  coupon_code:      z.string().optional(),
-  notes:            z.string().optional(),
+  shipping_address: z.string().min(5, "Shipping address is required"),
+  items: z
+    .array(
+      z.object({
+        product_id: z.number().int().positive("Invalid product ID"),
+        quantity: z.number().int().min(1, "Quantity must be at least 1"),
+      })
+    )
+    .min(1, "Order must contain at least one item"),
 });
 
 export const updateOrderStatusSchema = z.object({
-  status: z.enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded']),
+  status: z.enum(["pending", "confirmed", "shipped", "delivered", "cancelled"]),
 });
 
-export interface CancelOrderBody {
-  reason?: string;
-}
+export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
 
-// ─── DB row shapes (what comes back from pg) ──────────────────
-
-// Add these to orders.types.ts
-
-export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 export interface OrderItem {
-  id:                 number;
-  order_id:           number;
-  product_id:         number;
-  quantity:           number;
-  price_at_purchase:  number;
-  product_name:       string;
+  id: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
+  price_at_purchase: number;
 }
 
 export interface Order {
-  id:               number;
-  user_id:          number;
-  total_amount:     number;
-  status:           OrderStatus;
-  shipping_address: ShippingAddress;
-  created_at:       Date;
-  updated_at:       Date;
+  id: number;
+  user_id: number;
+  total_amount: number;
+  status: OrderStatus;
+  shipping_address: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface OrderWithItems extends Order {
-  items: OrderItem[];
-}
-
-export interface CreateOrderInput {
-  shipping_address: ShippingAddress;
-  items: {
-    product_id: number;
-    quantity:   number;
-  }[];
+  items: (OrderItem & { product_name: string })[];
 }
