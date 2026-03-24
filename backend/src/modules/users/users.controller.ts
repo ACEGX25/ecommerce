@@ -1,6 +1,23 @@
 import { Request, Response } from "express";
 import { getAllUsers, updateUser, deleteUser, getUserStats } from "./user.service";
 import { sendSuccess, sendError } from "../../utils/response";
+import db from "../../config/db"
+
+
+//get users for admin dashboard 
+export async function getUsers(req: Request, res: Response) {
+  try {
+    const result = await db.query(
+      `SELECT id, name, email, role, is_active, created_at
+       FROM public.users
+       ORDER BY id ASC`
+    );
+    return res.json(result.rows);
+  } catch (err: any) {
+    console.error("[users] fetch error:", err);
+    return res.status(500).json({ error: "Failed to fetch users" });
+  }
+}
 
 // GET /api/admin/users?page=1&limit=20&search=&role=
 export async function listUsers(req: Request, res: Response) {
@@ -72,3 +89,4 @@ export async function softDeleteUser(req: Request, res: Response) {
     return sendError(res, "Internal server error", 500);
   }
 }
+
