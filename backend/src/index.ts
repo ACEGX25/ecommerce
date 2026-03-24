@@ -3,14 +3,15 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import { ENV } from "../src/config/env";
-import { globalLimiter } from "../src/modules/middleware/ratelimiter";
-import { errorHandler } from "../src/modules/middleware/errorhandler";
+import { ENV } from "./config/env";
+import { globalLimiter } from "./modules/middleware/ratelimiter";
+import { errorHandler } from "./modules/middleware/errorhandler";
 
 // Route modules
-import authRoutes  from "../src/modules/auth/auth.routes";
-import usersRoutes from "../src/modules/users/users.routes";
-import womenRoutes from "../src/modules/women/women.routes";
+import authRoutes     from "./modules/auth/auth.routes";
+import usersRoutes    from "./modules/users/users.routes";
+import womenRoutes    from "./modules/women/women.routes";
+import purchaseRoutes from "./modules/purchase/purchase.routes";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.get("/health", (_req, res) => {
 app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
 app.use("/api/women",        womenRoutes);
+app.use("/api/purchase",     purchaseRoutes);
 
 // ─── 404 handler ──────────────────────────────────────────────
 app.use((_req, res) => {
