@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/components/auth/authProvider";
 import { Header } from "@/components/Header";
+import { CartDrawer } from "@/components/CartDrawer";
 import "./globals.css";
 
 export const metadata: Metadata = {
