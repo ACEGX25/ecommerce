@@ -11,7 +11,7 @@ import { errorHandler } from "../src/modules/middleware/errorhandler";
 // Route modules
 import authRoutes  from "../src/modules/auth/auth.routes";
 import usersRoutes from "../src/modules/users/users.routes";
-import { getAllOrders, getOrdersSummary } from "./modules/orders/orders.controller";
+import adminOrdersRouter from "./modules/admin/admin.routes";
 import { getUsers } from "./modules/users/users.controller";
 import { getAllProducts, createProduct } from "./modules/products/products.controller";
 import ordersRoutes from "../src/modules/orders/orders.routes";
@@ -42,14 +42,14 @@ app.get("/health", (_req, res) => {
 // ─── API routes ───────────────────────────────────────────────
 app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
-//orders route
-app.get("/api/orders",         getAllOrders);
-app.get("/api/orders/summary", getOrdersSummary);
+
 //users route
 app.get("/api/users",       getUsers);
-//products route
+//products route-admin
 app.get("/api/products",    getAllProducts);
 app.post("/api/products",   createProduct);
+
+app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/cart", cartRoutes);
 

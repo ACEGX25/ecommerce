@@ -51,16 +51,17 @@ export default function OrdersPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("accessToken="))
-          ?.split("=")[1]
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJlbWFpbCI6ImdpcmlzaEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3NDM1NzY4MCwiZXhwIjoxNzc0MzU4NTgwLCJhdWQiOiJkaW5nbHktY2xpZW50IiwiaXNzIjoiZGluZ2x5In0.GBsYoboaH8WgzdGj5GhbDEzxwoyl4m9Dh3LAJ6FwXB4"
+        // const token = document.cookie
+        //   .split("; ")
+        //   .find((row) => row.startsWith("accessToken="))
+        //   ?.split("=")[1]
 
-        if (!token) {
-          setError("Not authenticated")
-          setLoading(false)
-          return
-        }
+        // if (!token) {
+        //   setError("Not authenticated")
+        //   setLoading(false)
+        //   return
+        // }
 
         const res = await fetch(`http://localhost:4000/api/orders`, {
           headers: {

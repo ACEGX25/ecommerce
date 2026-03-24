@@ -10,6 +10,12 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 const API = "http://localhost:4000";
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJlbWFpbCI6ImdpcmlzaEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3NDM1Mzk0NSwiZXhwIjoxNzc0MzU0ODQ1LCJhdWQiOiJkaW5nbHktY2xpZW50IiwiaXNzIjoiZGluZ2x5In0.YI9lvF4lW5mpQZ4vcZObatuc_wOJckj6d1aG6BeEq7o"
+// const getToken = () =>
+//   document.cookie
+//     .split("; ")
+//     .find((row) => row.startsWith("accessToken="))
+//     ?.split("=")[1]
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -288,14 +294,27 @@ export default function DashboardPage() {
     setOrdersLoading(true); setOrdersError(null);
     try {
       const [oRes, sRes] = await Promise.all([
-        fetch(`${API}/api/orders`,         { credentials: "include" }),
-        fetch(`${API}/api/orders/summary`, { credentials: "include" }),
+        fetch(`${API}/api/admin/orders`,         { credentials: "include", headers: { Authorization: `Bearer ${token}` } }),
+fetch(`${API}/api/admin/orders/summary`, { credentials: "include", headers: { Authorization: `Bearer ${token}` } }),
       ]);
+
+      console.log("orders status:",  oRes.status);
+      console.log("summary status:", sRes.status);
+
       if (!oRes.ok) throw new Error(`Orders: HTTP ${oRes.status}`);
       if (!sRes.ok) throw new Error(`Summary: HTTP ${sRes.status}`);
+
       const [od, sd] = await Promise.all([oRes.json(), sRes.json()]);
-      setOrders(od); setSummary(sd);
-    } catch (e: any) { setOrdersError(e.message); }
+
+      console.log("orders response:",  JSON.stringify(od, null, 2));
+      console.log("summary response:", JSON.stringify(sd, null, 2));
+
+      setOrders(od.orders);
+      setSummary(sd.summary);
+    } catch (e: any) {
+      console.error("fetchOrders error:", e.message);
+      setOrdersError(e.message);
+    }
     finally { setOrdersLoading(false); }
   }
 
