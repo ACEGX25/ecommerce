@@ -14,7 +14,7 @@ const REFRESH_COOKIE = "dingly_refresh";
 const IS_PROD = process.env.NODE_ENV === "production";
 
 interface UserWithHash extends User {
-  password_hash: string;
+  password: string;
 }
 
 // ─── User queries ─────────────────────────────────────────────

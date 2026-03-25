@@ -8,10 +8,15 @@ import { globalLimiter } from "./modules/middleware/ratelimiter";
 import { errorHandler } from "./modules/middleware/errorhandler";
 
 // Route modules
-import authRoutes     from "./modules/auth/auth.routes";
-import usersRoutes    from "./modules/users/users.routes";
 import womenRoutes    from "./modules/women/women.routes";
 import purchaseRoutes from "./modules/purchase/purchase.routes";
+import authRoutes  from "../src/modules/auth/auth.routes";
+import usersRoutes from "../src/modules/users/users.routes";
+import adminOrdersRouter from "./modules/admin/admin.routes";
+import { getUsers } from "./modules/users/users.controller";
+import { getAllProducts, createProduct } from "./modules/products/products.controller";
+import ordersRoutes from "../src/modules/orders/orders.routes";
+import cartRoutes from "../src/modules/cart/cart.routes";
 
 const app = express();
 
@@ -40,6 +45,16 @@ app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
 app.use("/api/women",        womenRoutes);
 app.use("/api/purchase",     purchaseRoutes);
+
+//users route
+app.get("/api/users",       getUsers);
+//products route-admin
+app.get("/api/products",    getAllProducts);
+app.post("/api/products",   createProduct);
+
+app.use("/api/admin/orders", adminOrdersRouter);
+app.use("/api/orders", ordersRoutes);
+app.use("/api/cart", cartRoutes);
 
 // ─── 404 handler ──────────────────────────────────────────────
 app.use((_req, res) => {
