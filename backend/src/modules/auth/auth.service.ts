@@ -13,19 +13,20 @@ import { Request, Response } from "express";
 const REFRESH_COOKIE = "dingly_refresh";
 const IS_PROD = process.env.NODE_ENV === "production";
 
-interface UserWithHash extends User {
+// ─── UserWithPassword — internal use only ─────────────────────
+interface UserWithPassword extends User {
   password: string;
 }
 
 // ─── User queries ─────────────────────────────────────────────
-export async function findUserByEmail(email: string): Promise<UserWithHash | null> {
+export async function findUserByEmail(email: string): Promise<UserWithPassword | null> {
   const res = await db.query(
-    `SELECT id, name, email, role, password , is_active,
-        avatar_url, created_at, updated_at
- FROM users WHERE email = $1`,
+    `SELECT id, name, email, role, password, is_active,
+            email_verified, avatar_url, created_at, updated_at
+     FROM users WHERE email = $1`,
     [email.toLowerCase().trim()]
   );
-  return (res.rows[0] as unknown as UserWithHash) ?? null;
+  return (res.rows[0] as unknown as UserWithPassword) ?? null;
 }
 
 export async function findUserById(id: string): Promise<User | null> {
@@ -43,7 +44,7 @@ export async function createUser(params: {
   password: string;
   role?: UserRole;
 }): Promise<User> {
-  const passwordHash = await hashPassword(params.password);
+  const hashedPassword = await hashPassword(params.password);
   const res = await db.query(
     `INSERT INTO users (name, email, password, role)
      VALUES ($1, $2, $3, $4)
@@ -51,7 +52,7 @@ export async function createUser(params: {
     [
       params.name.trim(),
       params.email.toLowerCase().trim(),
-      passwordHash,
+      hashedPassword,
       params.role ?? "user",
     ]
   );
