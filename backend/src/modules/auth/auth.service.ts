@@ -22,7 +22,7 @@ interface UserWithPassword extends User {
 export async function findUserByEmail(email: string): Promise<UserWithPassword | null> {
   const res = await db.query(
     `SELECT id, name, email, role, password, is_active,
-            email_verified, avatar_url, created_at, updated_at
+            email, avatar_url, created_at, updated_at
      FROM users WHERE email = $1`,
     [email.toLowerCase().trim()]
   );

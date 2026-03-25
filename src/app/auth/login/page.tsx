@@ -24,7 +24,7 @@ const stagger: Variants = {
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get("from") || "/dashboard";
+  const from = searchParams.get("from") || "/";
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");

@@ -18,7 +18,7 @@ import {
 // ─── Context shape ────────────────────────────────────────────
 interface AuthContextValue {
   user: User | null;
-  accessToken: string | null;
+  accessToken: string | null | undefined;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (

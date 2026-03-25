@@ -17,6 +17,7 @@ import { getUsers } from "./modules/users/users.controller";
 import { getAllProducts, createProduct } from "./modules/products/products.controller";
 import ordersRoutes from "../src/modules/orders/orders.routes";
 import cartRoutes from "../src/modules/cart/cart.routes";
+import menRoutes from "../src/modules/men/men.routes";
 
 const app = express();
 
@@ -45,7 +46,7 @@ app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
 app.use("/api/women",        womenRoutes);
 app.use("/api/purchase",     purchaseRoutes);
-
+app.use("/api/men", menRoutes);
 //users route
 app.get("/api/users",       getUsers);
 //products route-admin
