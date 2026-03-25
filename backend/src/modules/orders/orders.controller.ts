@@ -120,32 +120,32 @@ export async function adminUpdateStatus(
   }
 }
 
-export async function getAllOrdersAdmin(req: Request, res: Response) {
-  try {
-    const result = await db.query(
-      `SELECT id, user_id, total_amount, status, shipping_address, created_at, updated_at
-       FROM public.orders
-       ORDER BY id DESC`
-    );
-    return res.json(result.rows);
-  } catch (err: any) {
-    console.error("[orders] fetch error:", err);
-    return res.status(500).json({ error: "Failed to fetch orders" });
-  }
-}
+// export async function getAllOrdersAdmin(req: Request, res: Response) {
+//   try {
+//     const result = await db.query(
+//       `SELECT id, user_id, total_amount, status, shipping_address, created_at, updated_at
+//        FROM public.orders
+//        ORDER BY id DESC`
+//     );
+//     return res.json(result.rows);
+//   } catch (err: any) {
+//     console.error("[orders] fetch error:", err);
+//     return res.status(500).json({ error: "Failed to fetch orders" });
+//   }
+// }
 
-export async function getOrdersSummary(req: Request, res: Response) {
-  try {
-    const result = await db.query(
-      `SELECT status, COUNT(*)::int AS count
-       FROM public.orders
-       GROUP BY status
-       ORDER BY count DESC`
-    );
-    // e.g. [{ status: "delivered", count: 4 }, ...]
-    return res.json(result.rows);
-  } catch (err: any) {
-    console.error("[orders] summary error:", err);
-    return res.status(500).json({ error: "Failed to fetch summary" });
-  }
-}
+// export async function getOrdersSummary(req: Request, res: Response) {
+//   try {
+//     const result = await db.query(
+//       `SELECT status, COUNT(*)::int AS count
+//        FROM public.orders
+//        GROUP BY status
+//        ORDER BY count DESC`
+//     );
+//     // e.g. [{ status: "delivered", count: 4 }, ...]
+//     return res.json(result.rows);
+//   } catch (err: any) {
+//     console.error("[orders] summary error:", err);
+//     return res.status(500).json({ error: "Failed to fetch summary" });
+//   }
+// }
