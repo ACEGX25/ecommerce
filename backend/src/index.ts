@@ -8,8 +8,6 @@ import { globalLimiter } from "./modules/middleware/ratelimiter";
 import { errorHandler } from "./modules/middleware/errorhandler";
 
 // Route modules
-import authRoutes     from "./modules/auth/auth.routes";
-import usersRoutes    from "./modules/users/users.routes";
 import womenRoutes    from "./modules/women/women.routes";
 import purchaseRoutes from "./modules/purchase/purchase.routes";
 import authRoutes  from "../src/modules/auth/auth.routes";
