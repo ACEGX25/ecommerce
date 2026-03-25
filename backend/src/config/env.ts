@@ -18,4 +18,7 @@ export const ENV = {
   JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES || "7d",
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
   IS_PROD: process.env.NODE_ENV === "production",
+  CLOUDINARY_CLOUD_NAME: required("CLOUDINARY_CLOUD_NAME"),
+  CLOUDINARY_API_KEY:    required("CLOUDINARY_API_KEY"),
+  CLOUDINARY_API_SECRET: required("CLOUDINARY_API_SECRET"),
 };
