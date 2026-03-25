@@ -64,7 +64,7 @@ export async function login(req: Request, res: Response) {
       return sendError(res, "Your account has been deactivated. Contact support.", 403);
     }
 
-    const valid = await comparePassword(password, user.password_hash);
+    const valid = await comparePassword(password, user.password);
     if (!valid) {
       await auditLog({ userId: user.id, action: "failed_login", ...meta, metadata: { reason: "wrong_password" } });
       return sendError(res, "Invalid email or password", 401);
