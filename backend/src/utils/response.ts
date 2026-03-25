@@ -1,9 +1,8 @@
-// src/utils/response.ts
 import { Response } from "express";
 
-export function sendSuccess(
+export function sendSuccess<T extends object>(
   res: Response,
-  data: Record<string, unknown>,
+  data: T,
   status = 200
 ) {
   return res.status(status).json({ success: true, ...data });
