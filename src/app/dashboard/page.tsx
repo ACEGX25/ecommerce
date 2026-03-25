@@ -8,8 +8,14 @@ import {
   Plus, X, ChevronRight, ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { TokenStorage } from "@/lib/token"
 
 const API = "http://localhost:4000";
+// const getToken = () =>
+//   document.cookie
+//     .split("; ")
+//     .find((row) => row.startsWith("accessToken="))
+//     ?.split("=")[1]
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,6 +108,7 @@ function DonutChart({ summary, total }: { summary: SummaryItem[]; total: number 
 function SlidePanel({ open, onClose, title, children }: {
   open: boolean; onClose: () => void; title: string; children: React.ReactNode;
 }) {
+ 
   return (
     <AnimatePresence>
       {open && (
@@ -287,15 +294,29 @@ export default function DashboardPage() {
   async function fetchOrders() {
     setOrdersLoading(true); setOrdersError(null);
     try {
+      const token = TokenStorage.get();
       const [oRes, sRes] = await Promise.all([
-        fetch(`${API}/api/orders`,         { credentials: "include" }),
-        fetch(`${API}/api/orders/summary`, { credentials: "include" }),
+        fetch(`${API}/api/admin/orders`,         { credentials: "include", headers: { Authorization: `Bearer ${token}` } }),
+fetch(`${API}/api/admin/orders/summary`, { credentials: "include", headers: { Authorization: `Bearer ${token}` } }),
       ]);
+
+      console.log("orders status:",  oRes.status);
+      console.log("summary status:", sRes.status);
+
       if (!oRes.ok) throw new Error(`Orders: HTTP ${oRes.status}`);
       if (!sRes.ok) throw new Error(`Summary: HTTP ${sRes.status}`);
+
       const [od, sd] = await Promise.all([oRes.json(), sRes.json()]);
-      setOrders(od); setSummary(sd);
-    } catch (e: any) { setOrdersError(e.message); }
+
+      console.log("orders response:",  JSON.stringify(od, null, 2));
+      console.log("summary response:", JSON.stringify(sd, null, 2));
+
+      setOrders(od.orders);
+      setSummary(sd.summary);
+    } catch (e: any) {
+      console.error("fetchOrders error:", e.message);
+      setOrdersError(e.message);
+    }
     finally { setOrdersLoading(false); }
   }
 

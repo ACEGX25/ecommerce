@@ -20,9 +20,9 @@ interface UserWithHash extends User {
 // ─── User queries ─────────────────────────────────────────────
 export async function findUserByEmail(email: string): Promise<UserWithHash | null> {
   const res = await db.query(
-    `SELECT id, name, email, role, password, is_active,
-            avatar_url, created_at, updated_at
-     FROM users WHERE email = $1`,
+    `SELECT id, name, email, role, password AS password_hash, is_active,
+        avatar_url, created_at, updated_at
+ FROM users WHERE email = $1`,
     [email.toLowerCase().trim()]
   );
   return (res.rows[0] as unknown as UserWithHash) ?? null;

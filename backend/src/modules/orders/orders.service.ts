@@ -25,13 +25,54 @@ export async function getOrderById(
   return { ...order, items: itemsRes.rows };
 }
 
-export async function getOrdersByUser(userId: number): Promise<Order[]> {
+export async function getOrdersByUser(userId: number): Promise<OrderWithItems[]> {
   const res = await db.query(
-    `SELECT id, user_id, total_amount, status, shipping_address, created_at, updated_at
-     FROM orders WHERE user_id = $1 ORDER BY created_at DESC`,
+    `SELECT
+        o.id, o.user_id, o.total_amount, o.status,
+        o.shipping_address, o.created_at, o.updated_at,
+        oi.id           AS item_id,
+        oi.product_id,
+        oi.quantity,
+        oi.price_at_purchase,
+        p.name          AS product_name
+     FROM orders o
+     LEFT JOIN order_items oi ON oi.order_id = o.id
+     LEFT JOIN products p ON p.id = oi.product_id
+     WHERE o.user_id = $1
+     ORDER BY o.created_at DESC`,
     [userId]
   );
-  return res.rows;
+
+  // Group flat rows into orders with nested items array
+  const ordersMap = new Map<number, OrderWithItems>();
+
+  for (const row of res.rows) {
+    if (!ordersMap.has(row.id)) {
+      ordersMap.set(row.id, {
+        id: row.id,
+        user_id: row.user_id,
+        total_amount: row.total_amount,
+        status: row.status,
+        shipping_address: row.shipping_address,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        items: [],
+      });
+    }
+
+    if (row.item_id) {
+      ordersMap.get(row.id)!.items.push({
+        id: row.item_id,
+        order_id: row.id,
+        product_id: row.product_id,
+        quantity: row.quantity,
+        price_at_purchase: row.price_at_purchase,
+        product_name: row.product_name,
+      });
+    }
+  }
+
+  return Array.from(ordersMap.values());
 }
 
 export async function getAllOrders(

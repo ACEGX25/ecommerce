@@ -1,17 +1,18 @@
-// src/index.ts
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import { ENV } from "../src/config/env";
-import { globalLimiter } from "../src/modules/middleware/ratelimiter";
-import { errorHandler } from "../src/modules/middleware/errorhandler";
+import { ENV } from "./config/env";
+import { globalLimiter } from "./modules/middleware/ratelimiter";
+import { errorHandler } from "./modules/middleware/errorhandler";
 
 // Route modules
+import womenRoutes    from "./modules/women/women.routes";
+import purchaseRoutes from "./modules/purchase/purchase.routes";
 import authRoutes  from "../src/modules/auth/auth.routes";
 import usersRoutes from "../src/modules/users/users.routes";
-import { getAllOrders, getOrdersSummary } from "./modules/orders/orders.controller";
+import adminOrdersRouter from "./modules/admin/admin.routes";
 import { getUsers } from "./modules/users/users.controller";
 import { getAllProducts, createProduct } from "./modules/products/products.controller";
 import ordersRoutes from "../src/modules/orders/orders.routes";
@@ -24,7 +25,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: ENV.FRONTEND_URL,
-    credentials: true,   // allow cookies (refresh token)
+    credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -42,14 +43,16 @@ app.get("/health", (_req, res) => {
 // ─── API routes ───────────────────────────────────────────────
 app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
-//orders route
-app.get("/api/orders",         getAllOrders);
-app.get("/api/orders/summary", getOrdersSummary);
+app.use("/api/women",        womenRoutes);
+app.use("/api/purchase",     purchaseRoutes);
+
 //users route
 app.get("/api/users",       getUsers);
-//products route
+//products route-admin
 app.get("/api/products",    getAllProducts);
 app.post("/api/products",   createProduct);
+
+app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/cart", cartRoutes);
 
