@@ -40,8 +40,9 @@ export default function PurchasePage() {
       setOrderPlaced(true);
       clearPurchase();
     } catch (err: any) {
+      // Fixed: native fetch throws Error with .message not .response.data.message
       setError(
-        err?.response?.data?.message || "Failed to place order. Please try again."
+        err?.message || "Failed to place order. Please try again."
       );
     } finally {
       setLoading(false);

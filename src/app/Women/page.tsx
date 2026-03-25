@@ -47,14 +47,13 @@ export default function WomenPage() {
     );
   }
 
-  // Map backend product to frontend Product shape
   const mappedProducts = products.map((p) => ({
     id: String(p.id),
     name: p.name,
     price: Number(p.price),
     image: p.image_url || "/assets/placeholder.jpg",
     category: "women" as const,
-    material: "",
+    material: p.description || "",
     weight: "",
     fit: "",
     sizes: p.size ? [p.size] : ["XS", "S", "M", "L"],
