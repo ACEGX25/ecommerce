@@ -22,7 +22,7 @@ export function getAccessToken() {
   if (!accessToken) {
     accessToken = localStorage.getItem("accessToken");
   }
-  return accessToken;
+  return accessToken || null;
 }
 
 // Drain the pending request queue after a token refresh
