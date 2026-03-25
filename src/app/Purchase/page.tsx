@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus, ArrowLeft, Trash2, CheckCircle } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useState } from "react";
+import { placeOrder } from "@/lib/purchase";
 
 export default function PurchasePage() {
   const {
@@ -15,16 +16,36 @@ export default function PurchasePage() {
     totalPurchasePrice,
     clearPurchase,
   } = useCart();
+
   const router = useRouter();
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const shippingCost = totalPurchasePrice > 100 ? 0 : 9.99;
   const tax = totalPurchasePrice * 0.08;
   const grandTotal = totalPurchasePrice + shippingCost + tax;
 
-  const handleCheckout = () => {
-    setOrderPlaced(true);
-    clearPurchase();
+  const handleCheckout = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await placeOrder({
+        items: purchaseItems.map((item) => ({
+          product_id: parseInt(item.product.id),
+          quantity: item.quantity,
+          price_at_purchase: item.product.price,
+        })),
+      });
+      setOrderPlaced(true);
+      clearPurchase();
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message || "Failed to place order. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (orderPlaced) {
@@ -90,18 +111,14 @@ export default function PurchasePage() {
                     <p className="meta-text text-primary mt-1">${item.product.price.toFixed(2)}</p>
                     <div className="flex items-center gap-3 mt-3">
                       <button
-                        onClick={() =>
-                          updatePurchaseQuantity(item.product.id, item.size, item.quantity - 1)
-                        }
+                        onClick={() => updatePurchaseQuantity(item.product.id, item.size, item.quantity - 1)}
                         className="border w-7 h-7 flex items-center justify-center hover:bg-muted transition-colors duration-150"
                       >
                         <Minus className="h-3 w-3" />
                       </button>
                       <span className="meta-text text-xs w-4 text-center">{item.quantity}</span>
                       <button
-                        onClick={() =>
-                          updatePurchaseQuantity(item.product.id, item.size, item.quantity + 1)
-                        }
+                        onClick={() => updatePurchaseQuantity(item.product.id, item.size, item.quantity + 1)}
                         className="border w-7 h-7 flex items-center justify-center hover:bg-muted transition-colors duration-150"
                       >
                         <Plus className="h-3 w-3" />
@@ -151,11 +168,17 @@ export default function PurchasePage() {
                   Add ${(100 - totalPurchasePrice).toFixed(2)} more for free shipping
                 </p>
               )}
+
+              {error && (
+                <p className="text-red-500 text-xs mb-4">{error}</p>
+              )}
+
               <button
                 onClick={handleCheckout}
-                className="w-full bg-foreground text-background px-6 py-3 font-medium text-sm uppercase tracking-wide hover:bg-primary transition-colors duration-200"
+                disabled={loading}
+                className="w-full bg-foreground text-background px-6 py-3 font-medium text-sm uppercase tracking-wide hover:bg-primary transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Place Order
+                {loading ? "Placing Order..." : "Place Order"}
               </button>
               <Link
                 href="/cart"

@@ -1,14 +1,17 @@
-// src/index.ts
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import { ENV } from "../src/config/env";
-import { globalLimiter } from "../src/modules/middleware/ratelimiter";
-import { errorHandler } from "../src/modules/middleware/errorhandler";
+import { ENV } from "./config/env";
+import { globalLimiter } from "./modules/middleware/ratelimiter";
+import { errorHandler } from "./modules/middleware/errorhandler";
 
 // Route modules
+import authRoutes     from "./modules/auth/auth.routes";
+import usersRoutes    from "./modules/users/users.routes";
+import womenRoutes    from "./modules/women/women.routes";
+import purchaseRoutes from "./modules/purchase/purchase.routes";
 import authRoutes  from "../src/modules/auth/auth.routes";
 import usersRoutes from "../src/modules/users/users.routes";
 import adminOrdersRouter from "./modules/admin/admin.routes";
@@ -24,7 +27,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: ENV.FRONTEND_URL,
-    credentials: true,   // allow cookies (refresh token)
+    credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -42,6 +45,8 @@ app.get("/health", (_req, res) => {
 // ─── API routes ───────────────────────────────────────────────
 app.use("/api/auth",         authRoutes);
 app.use("/api/admin/users",  usersRoutes);
+app.use("/api/women",        womenRoutes);
+app.use("/api/purchase",     purchaseRoutes);
 
 //users route
 app.get("/api/users",       getUsers);
