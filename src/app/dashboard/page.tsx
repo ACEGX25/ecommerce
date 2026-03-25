@@ -8,9 +8,9 @@ import {
   Plus, X, ChevronRight, ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { TokenStorage } from "@/lib/token"
 
 const API = "http://localhost:4000";
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJlbWFpbCI6ImdpcmlzaEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3NDM1Mzk0NSwiZXhwIjoxNzc0MzU0ODQ1LCJhdWQiOiJkaW5nbHktY2xpZW50IiwiaXNzIjoiZGluZ2x5In0.YI9lvF4lW5mpQZ4vcZObatuc_wOJckj6d1aG6BeEq7o"
 // const getToken = () =>
 //   document.cookie
 //     .split("; ")
@@ -108,6 +108,7 @@ function DonutChart({ summary, total }: { summary: SummaryItem[]; total: number 
 function SlidePanel({ open, onClose, title, children }: {
   open: boolean; onClose: () => void; title: string; children: React.ReactNode;
 }) {
+ 
   return (
     <AnimatePresence>
       {open && (
@@ -293,6 +294,7 @@ export default function DashboardPage() {
   async function fetchOrders() {
     setOrdersLoading(true); setOrdersError(null);
     try {
+      const token = TokenStorage.get();
       const [oRes, sRes] = await Promise.all([
         fetch(`${API}/api/admin/orders`,         { credentials: "include", headers: { Authorization: `Bearer ${token}` } }),
 fetch(`${API}/api/admin/orders/summary`, { credentials: "include", headers: { Authorization: `Bearer ${token}` } }),

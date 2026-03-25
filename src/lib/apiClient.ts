@@ -11,10 +11,17 @@ let pendingQueue: Array<{
 }> = [];
 
 export function setAccessToken(token: string | null) {
-  accessToken = token;
+  accessToken = token; // keep in-memory for the current session
+  // ✅ also persist to localStorage so it survives refresh
+  if (token) localStorage.setItem("accessToken", token);
+  else localStorage.removeItem("accessToken");
 }
 
 export function getAccessToken() {
+  // ✅ read from localStorage if memory is empty (e.g. after page refresh)
+  if (!accessToken) {
+    accessToken = localStorage.getItem("accessToken");
+  }
   return accessToken;
 }
 
